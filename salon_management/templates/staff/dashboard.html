@@ -113,6 +113,7 @@ Staff Dashboard
                             <th>Service</th>
                             <th>Price</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
 
                     </thead>
@@ -140,11 +141,70 @@ Staff Dashboard
                             </td>
 
                             <td>
+                                {% if appointment.status == 'completed' %}
+                                    <span class="badge bg-success">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% elif appointment.status == 'cancelled' %}
+                                    <span class="badge bg-danger">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge bg-primary">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% endif %}
 
-                                <span class="badge bg-success">
-                                    {{ appointment.status }}
-                                </span>
+                            </td> 
+                            <td>
+                                <form
+                                    method="POST"
+                                    action="{% url 'update_staff_appointment_status' appointment.id %}"
+                                >
 
+                                    {% csrf_token %}
+
+                                    <select
+                                        name="status"
+                                        class="form-select form-select-sm"
+                                        onchange="this.form.submit()"
+                                    >
+
+                                        <option
+                                            value="pending"
+                                            {% if appointment.status == "pending" %}selected{% endif %}
+                                        >
+                                            Pending
+                                        </option>
+
+                                        <option
+                                            value="confirmed"
+                                            {% if appointment.status == "confirmed" %}selected{% endif %}
+                                        >
+                                            Confirmed
+                                        </option>
+
+                                        <option
+                                            value="completed"
+                                            {% if appointment.status == "completed" %}selected{% endif %}
+                                        >
+                                            Completed
+                                        </option>
+
+                                        <option
+                                            value="cancelled"
+                                            {% if appointment.status == "cancelled" %}selected{% endif %}
+                                        >
+                                            Cancelled
+                                        </option>
+
+                                    </select>
+
+                                </form>
                             </td>
 
                         </tr>

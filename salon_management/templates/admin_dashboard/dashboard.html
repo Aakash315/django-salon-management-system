@@ -166,11 +166,19 @@ Admin Dashboard
                             </td>
 
                             <td>
-
-                                <span class="badge bg-success">
-                                    {{ appointment.status }}
-                                </span>
-
+                                {% if appointment.status == 'completed' %}
+                                    <span class="badge bg-success">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% elif appointment.status == 'cancelled' %}
+                                    <span class="badge bg-danger">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% endif %}
                             </td>
 
                         </tr>

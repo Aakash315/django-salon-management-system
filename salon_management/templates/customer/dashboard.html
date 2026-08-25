@@ -136,9 +136,23 @@ Customer Dashboard
                         </h5>
                     </div>
 
-                    <span class="badge bg-success">
-                        {{ upcoming_appointment.status }}
-                    </span>
+                    {% if upcoming_appointment.status == "completed" %}
+                        <span class="badge bg-success">
+                            {{ upcoming_appointment.status }}
+                        </span>
+                    {% elif upcoming_appointment.status == "cancelled" %}
+                        <span class="badge bg-danger">
+                            {{ upcoming_appointment.status }}
+                        </span>
+                    {% elif upcoming_appointment.status == "confirmed" %}
+                        <span class="badge bg-primary">
+                            {{ upcoming_appointment.status }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">
+                            {{ upcoming_appointment.status }}
+                        </span>
+                    {% endif %}
 
                 </div>
 
