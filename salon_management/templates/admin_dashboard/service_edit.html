@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Service
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "admin_dashboard/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="content-card">
+
+            <h3>
+                Edit Service
+            </h3>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Service Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        value="{{ service.name }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Description
+                    </label>
+
+                    <textarea
+                        name="description"
+                        class="form-control"
+                        rows="4"
+                    >{{ service.description }}</textarea>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Default Price
+                        </label>
+
+                        <input
+                            type="number"
+                            name="default_price"
+                            class="form-control"
+                            value="{{ service.default_price }}"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Default Duration
+                        </label>
+
+                        <input
+                            type="number"
+                            name="default_duration"
+                            class="form-control"
+                            value="{{ service.default_duration }}"
+                            min="5"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-check mb-4">
+
+                    <input
+                        type="checkbox"
+                        name="is_active"
+                        class="form-check-input"
+                        id="is_active"
+                        {% if service.is_active %}
+                        checked
+                        {% endif %}
+                    >
+
+                    <label
+                        class="form-check-label"
+                        for="is_active"
+                    >
+                        Service Active
+                    </label>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Save Changes
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

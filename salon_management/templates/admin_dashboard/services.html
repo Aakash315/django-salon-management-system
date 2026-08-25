@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}
+Services
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "admin_dashboard/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>Services</h2>
+
+                <p class="text-muted">
+                    Manage salon services and default pricing.
+                </p>
+
+            </div>
+
+            <a
+                href="{% url 'admin_add_service' %}"
+                class="btn btn-primary"
+            >
+                + Add Service
+            </a>
+
+        </div>
+
+
+        <div class="content-card">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Service</th>
+                            <th>Default Price</th>
+                            <th>Duration</th>
+                            <th>Staff</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for service in services %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    {{ service.name }}
+                                </strong>
+
+                            </td>
+
+                            <td>
+                                ₹{{ service.default_price }}
+                            </td>
+
+                            <td>
+                                {{ service.default_duration }}
+                                min
+                            </td>
+
+                            <td>
+                                {{ service.staff_count }}
+                            </td>
+
+                            <td>
+
+                                {% if service.is_active %}
+
+                                    <span class="badge bg-success">
+                                        Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        Disabled
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'admin_edit_service' service.id %}"
+                                    class="btn btn-sm btn-outline-primary"
+                                >
+                                    Edit
+                                </a>
+
+                                <a
+                                    href="{% url 'admin_delete_service' service.id %}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm(
+                                        'Delete this service?'
+                                    )"
+                                >
+                                    Delete
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                class="text-center py-5"
+                            >
+                                No services found.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

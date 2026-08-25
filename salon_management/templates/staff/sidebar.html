@@ -1,0 +1,58 @@
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+        ✦ SALON
+    </div>
+
+    <div class="staff-mini-profile">
+
+        {% if staff.profile_image %}
+
+            <img
+                src="{{ staff.profile_image.url }}"
+                alt="{{ staff.name }}"
+            >
+
+        {% endif %}
+
+        <strong>
+            {{ staff.name }}
+        </strong>
+
+        <small>
+            {{ staff.designation }}
+        </small>
+
+    </div>
+
+    <nav>
+
+        <a href="{% url 'staff_dashboard' %}">
+            🏠 Dashboard
+        </a>
+
+        <a href="{% url 'staff_appointments' %}">
+            📅 Appointments
+        </a>
+
+        <a href="{% url 'staff_services' %}">
+            ✂ My Services
+        </a>
+
+        <a href="{% url 'staff_availability' %}">
+            🕐 Availability
+        </a>
+
+        <a href="{% url 'staff_profile' %}">
+            👤 Profile
+        </a>
+
+        <hr>
+
+        <a href="{% url 'logout' %}">
+            🚪 Logout
+        </a>
+
+    </nav>
+
+</aside>

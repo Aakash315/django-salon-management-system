@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Staff Services
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "admin_dashboard/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>
+                    {{ staff.name }}
+                </h2>
+
+                <p class="text-muted">
+                    Manage services offered by this staff member.
+                </p>
+
+            </div>
+
+            <a
+                href="{% url 'admin_staff' %}"
+                class="btn btn-secondary"
+            >
+                ← Back to Staff
+            </a>
+
+        </div>
+
+
+        <div class="content-card">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <h4 class="mb-4">
+                    Available Services
+                </h4>
+
+
+                {% for service in services %}
+
+                    <div class="service-assignment-row">
+
+                        <div class="form-check">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="services"
+                                value="{{ service.id }}"
+                                id="service_{{ service.id }}"
+
+                                {% if service.id in assigned_ids %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                class="form-check-label"
+                                for="service_{{ service.id }}"
+                            >
+
+                                <strong>
+                                    {{ service.name }}
+                                </strong>
+
+                                <br>
+
+                                <small class="text-muted">
+
+                                    Default:
+                                    ₹{{ service.default_price }}
+
+                                    ·
+
+                                    {{ service.default_duration }}
+                                    min
+
+                                </small>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="alert alert-info">
+
+                        No active services found.
+
+                        <a
+                            href="{% url 'admin_add_service' %}"
+                        >
+                            Create a service
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+
+                {% if services %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary mt-4"
+                    >
+                        Save Services
+                    </button>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+
+
+        <!-- Assigned services -->
+
+        <div class="content-card mt-4">
+
+            <h4 class="mb-4">
+                Current Services & Pricing
+            </h4>
+
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Service
+                            </th>
+
+                            <th>
+                                Staff Price
+                            </th>
+
+                            <th>
+                                Duration
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for item in assigned_services %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ item.service.name }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ₹{{ item.price }}
+                            </td>
+
+                            <td>
+                                {{ item.duration }} min
+                            </td>
+
+                            <td>
+
+                                {% if item.is_available %}
+
+                                    <span
+                                        class="badge bg-success"
+                                    >
+                                        Available
+                                    </span>
+
+                                {% else %}
+
+                                    <span
+                                        class="badge bg-secondary"
+                                    >
+                                        Disabled
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="4"
+                                class="text-center py-4"
+                            >
+
+                                This staff member has no
+                                assigned services.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

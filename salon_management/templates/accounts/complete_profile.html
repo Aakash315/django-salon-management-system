@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}
+Complete Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            ✦ SALON
+        </div>
+
+        <h2>
+            Complete Your Profile
+        </h2>
+
+        <p class="text-muted mb-4">
+            Tell us a little about yourself.
+        </p>
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control"
+                    placeholder="Enter your name"
+                    maxlength="100"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Mobile Number
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{ phone }}"
+                    disabled
+                >
+
+            </div>
+
+
+            <div class="mb-4">
+
+                <label class="form-label">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Optional"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100 btn-lg"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

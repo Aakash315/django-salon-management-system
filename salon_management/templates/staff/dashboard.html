@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}
+Staff Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "staff/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>
+                    Welcome, {{ staff.name }} 👋
+                </h2>
+
+                <p class="text-muted">
+                    Here's your schedule for today.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-md-3">
+
+                <div class="stat-card">
+
+                    <div>
+                        <p>Today's Bookings</p>
+                        <h2>{{ today_count }}</h2>
+                    </div>
+
+                    📅
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="stat-card">
+
+                    <div>
+                        <p>Pending</p>
+                        <h2>{{ pending_count }}</h2>
+                    </div>
+
+                    ⏳
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="stat-card">
+
+                    <div>
+                        <p>Completed</p>
+                        <h2>{{ completed_count }}</h2>
+                    </div>
+
+                    ✓
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="stat-card">
+
+                    <div>
+                        <p>Revenue</p>
+                        <h2>₹{{ today_revenue }}</h2>
+                    </div>
+
+                    ₹
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="content-card mt-4">
+
+            <h4>Today's Appointments</h4>
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>Time</th>
+                            <th>Customer</th>
+                            <th>Service</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for appointment in appointments %}
+
+                        <tr>
+
+                            <td>
+                                {{ appointment.start_time }}
+                            </td>
+
+                            <td>
+                                {{ appointment.customer }}
+                            </td>
+
+                            <td>
+                                {{ appointment.service.name }}
+                            </td>
+
+                            <td>
+                                ₹{{ appointment.price }}
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-success">
+                                    {{ appointment.status }}
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="text-center"
+                            >
+                                No appointments today.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

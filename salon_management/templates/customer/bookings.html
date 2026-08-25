@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Bookings
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "customer/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+                <h2>My Bookings</h2>
+
+                <p class="text-muted">
+                    View all your appointments.
+                </p>
+            </div>
+
+            <a
+                href="{% url 'booking' %}"
+                class="btn btn-primary"
+            >
+                + New Booking
+            </a>
+
+        </div>
+
+
+        <div class="content-card">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>Service</th>
+                            <th>Staff</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for booking in bookings %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ booking.service.name }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ booking.staff.name }}
+                            </td>
+
+                            <td>
+                                {{ booking.appointment_date }}
+                            </td>
+
+                            <td>
+                                {{ booking.start_time }}
+                            </td>
+
+                            <td>
+                                ₹{{ booking.price }}
+                            </td>
+
+                            <td>
+
+                                {% if booking.status == "confirmed" %}
+
+                                    <span class="badge bg-success">
+                                        Confirmed
+                                    </span>
+
+                                {% elif booking.status == "pending" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% elif booking.status == "completed" %}
+
+                                    <span class="badge bg-primary">
+                                        Completed
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {% if booking.status == "pending" or booking.status == "confirmed" %}
+
+                                <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm(
+                        'Cancel this appointment?'
+                    )">
+                                    Cancel
+                                </a>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                class="text-center py-5"
+                            >
+
+                                <h5>No bookings yet</h5>
+
+                                <p class="text-muted">
+                                    Book your first salon appointment.
+                                </p>
+
+                                <a
+                                    href="{% url 'booking' %}"
+                                    class="btn btn-primary"
+                                >
+                                    Book Appointment
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

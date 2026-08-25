@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Staff
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "admin_dashboard/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="content-card">
+
+            <h3 class="mb-4">
+                Add Staff Member
+            </h3>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="Enter staff name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="text"
+                            name="phone"
+                            class="form-control"
+                            placeholder="Enter phone number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="Enter email"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Designation
+                        </label>
+
+                        <input
+                            type="text"
+                            name="designation"
+                            class="form-control"
+                            placeholder="Hair Stylist"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-4">
+
+                        <label class="form-label">
+                            Login Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Create password"
+                            minlength="6"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Create Staff
+                </button>
+
+
+                <a
+                    href="{% url 'admin_staff' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

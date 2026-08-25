@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}
+Customer Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "customer/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+                <h2>Good Morning, {{ request.user.customer_profile.name | capfirst }} 👋</h2>
+                <p class="text-muted">
+                    Welcome back to your salon dashboard.
+                </p>
+            </div>
+
+            <div>
+                <a
+                    href="{% url 'booking' %}"
+                    class="btn btn-primary"
+                >
+                    + Book Appointment
+                </a>
+            </div>
+
+        </div>
+
+        <div class="row g-4 mt-2">
+
+            <div class="col-md-4">
+
+                <div class="stat-card">
+
+                    <div>
+                        <p>Upcoming</p>
+                        <h2>{{ upcoming_count }}</h2>
+                    </div>
+
+                    <span class="stat-icon">
+                        📅
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="stat-card">
+
+                    <div>
+                        <p>Completed</p>
+                        <h2>{{ completed_count }}</h2>
+                    </div>
+
+                    <span class="stat-icon">
+                        ✓
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="stat-card">
+
+                    <div>
+                        <p>Total Bookings</p>
+                        <h2>{{ total_bookings }}</h2>
+                    </div>
+
+                    <span class="stat-icon">
+                        ✂
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="content-card mt-4">
+
+            <div class="d-flex justify-content-between">
+
+                <h4>Upcoming Appointment</h4>
+
+                <a href="{% url 'customer_bookings' %}">
+                    View All
+                </a>
+
+            </div>
+
+            {% if upcoming_appointment %}
+
+                <div class="appointment-card mt-3">
+
+                    <div>
+                        <small>Service</small>
+
+                        <h5>
+                            {{ upcoming_appointment.service.name }}
+                        </h5>
+                    </div>
+
+                    <div>
+                        <small>Staff</small>
+
+                        <h5>
+                            {{ upcoming_appointment.staff.name }}
+                        </h5>
+                    </div>
+
+                    <div>
+                        <small>Date</small>
+
+                        <h5>
+                            {{ upcoming_appointment.appointment_date }}
+                        </h5>
+                    </div>
+
+                    <div>
+                        <small>Time</small>
+
+                        <h5>
+                            {{ upcoming_appointment.start_time }}
+                        </h5>
+                    </div>
+
+                    <span class="badge bg-success">
+                        {{ upcoming_appointment.status }}
+                    </span>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <h5>No upcoming appointments</h5>
+
+                    <p>
+                        Book your next salon appointment.
+                    </p>
+
+                    <a
+                        href="{% url 'booking' %}"
+                        class="btn btn-primary"
+                    >
+                        Book Now
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

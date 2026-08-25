@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}
+Staff Management
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "admin_dashboard/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>Staff Management</h2>
+
+                <p class="text-muted">
+                    Manage salon staff.
+                </p>
+
+            </div>
+
+            <a href="{% url 'admin_add_staff' %}" class="btn btn-primary">
+                + Add Staff
+            </a>
+
+        </div>
+
+
+        <div class="content-card">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Staff</th>
+                            <th>Phone</th>
+                            <th>Designation</th>
+                            <th>Status</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for staff in staff_members %}
+
+                        <tr>
+
+                            <td>
+
+                                <div class="staff-table-user">
+
+                                    {% if staff.profile_image %}
+
+                                    <img src="{{ staff.profile_image.url }}" alt="">
+
+                                    {% endif %}
+
+                                    <strong>
+                                        {{ staff.name }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+                                {{ staff.phone }}
+                            </td>
+
+                            <td>
+                                {{ staff.designation }}
+                            </td>
+
+                            <td>
+
+                                {% if staff.is_available %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+                                    Inactive
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a href="{% url 'admin_edit_staff' staff.id %}" class="btn btn-sm btn-outline-primary">
+                                    Edit
+                                </a>
+                                <a href="{% url 'admin_staff_services' staff.id %}"
+                                    class="btn btn-sm btn-outline-success">
+                                    Services
+                                </a>
+                                <a href="{% url 'admin_delete_staff' staff.id %}" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm(
+        'Deactivate this staff member?'
+    )">
+                                    Deactivate
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,612 @@
+{% extends "base.html" %}
+
+{% block title %}
+Book Appointment
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "customer/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+                <h2>Book Appointment</h2>
+                <p class="text-muted">
+                    Choose service, staff, date and time.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="content-card">
+
+            <form method="POST" action="{% url 'create_booking' %}">
+
+                {% csrf_token %}
+
+
+                <!-- SERVICE -->
+
+                <div class="booking-section">
+
+                    <h4>1. Select Service</h4>
+
+                    <div class="row g-3">
+
+                        {% for service in services %}
+
+                        <div class="col-md-4">
+
+                            <label class="select-card">
+
+                                <input type="radio" name="service" value="{{ service.id }}" required>
+
+                                <div>
+
+                                    <h5>
+                                        {{ service.name }}
+                                    </h5>
+
+                                    <p>
+                                        ₹{{ service.default_price }}
+                                        •
+                                        {{ service.default_duration }}
+                                        min
+                                    </p>
+
+                                </div>
+
+                            </label>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- STAFF -->
+
+                <div class="booking-section">
+
+                    <h4>2. Select Staff</h4>
+
+                    <select id="staff" name="staff" class="form-select" required disabled>
+
+                        <option value="">
+                            Select a service first
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="booking-section">
+
+                    <h4>3. Select Date</h4>
+
+                    <input type="date" id="date" name="date" class="form-control" required>
+
+                </div>
+
+
+                <!-- SLOTS -->
+
+                <div class="booking-section">
+
+                    <h4>4. Select Time</h4>
+
+                    <div id="slots" class="slots-container">
+
+                        <p class="text-muted">
+                            Select service, staff and date.
+                        </p>
+
+                    </div>
+
+                    <input type="hidden" name="start_time" id="selected_time" required>
+
+                </div>
+
+
+                <!-- NOTES -->
+
+                <div class="booking-section">
+
+                    <h4>5. Notes</h4>
+
+                    <textarea name="notes" class="form-control" rows="4" placeholder="Any special request?"></textarea>
+
+                </div>
+
+
+                <button type="submit" class="btn btn-primary btn-lg">
+                    Confirm Appointment
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}
+{% block extra_js %}
+
+<script>
+
+const today =
+    new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+const dateInput =
+    document.getElementById("date");
+
+
+dateInput.min = today;
+
+
+const serviceInputs =
+    document.querySelectorAll(
+        'input[name="service"]'
+    );
+
+
+const staffSelect =
+    document.getElementById("staff");
+
+
+const slotsContainer =
+    document.getElementById("slots");
+
+
+const selectedTime =
+    document.getElementById("selected_time");
+
+
+// ======================================
+// Get selected service
+// ======================================
+
+function getSelectedService() {
+
+    const selected =
+        document.querySelector(
+            'input[name="service"]:checked'
+        );
+
+    if (!selected) {
+        return null;
+    }
+
+    return selected.value;
+}
+
+
+// ======================================
+// Format time
+// ======================================
+
+function formatTime(time) {
+
+    const [hours, minutes] =
+        time.split(":");
+
+    const date =
+        new Date();
+
+    date.setHours(
+        parseInt(hours),
+        parseInt(minutes),
+        0
+    );
+
+    return date.toLocaleTimeString(
+        "en-IN",
+        {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        }
+    );
+}
+
+
+// ======================================
+// Load staff
+// ======================================
+
+async function loadStaff() {
+
+    const serviceId =
+        getSelectedService();
+
+
+    if (!serviceId) {
+
+        staffSelect.disabled = true;
+
+        return;
+
+    }
+
+
+    staffSelect.disabled = true;
+
+
+    staffSelect.innerHTML = `
+        <option value="">
+            Loading staff...
+        </option>
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/booking/staff-by-service/?service=${serviceId}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Staff API:",
+            data
+        );
+
+
+        staffSelect.innerHTML = `
+            <option value="">
+                Select Staff
+            </option>
+        `;
+
+
+        if (
+            !data.staff ||
+            data.staff.length === 0
+        ) {
+
+            staffSelect.innerHTML = `
+                <option value="">
+                    No staff available
+                </option>
+            `;
+
+            return;
+        }
+
+
+        data.staff.forEach(
+            staff => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    staff.id;
+
+
+                option.textContent =
+                    `${staff.name} — ₹${staff.price} — ${staff.duration} min`;
+
+
+                staffSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        staffSelect.disabled = false;
+
+
+    } catch (error) {
+
+        console.error(
+            "Staff loading error:",
+            error
+        );
+
+
+        staffSelect.innerHTML = `
+            <option value="">
+                Unable to load staff
+            </option>
+        `;
+
+    }
+
+}
+
+
+// ======================================
+// Load slots
+// ======================================
+
+async function loadSlots() {
+
+    const staff =
+        staffSelect.value;
+
+
+    const service =
+        getSelectedService();
+
+
+    const date =
+        dateInput.value;
+
+
+    console.log(
+        "Loading slots:",
+        {
+            staff,
+            service,
+            date
+        }
+    );
+
+
+    if (
+        !staff ||
+        !service ||
+        !date
+    ) {
+
+        slotsContainer.innerHTML = `
+            <p class="text-muted">
+                Select service, staff and date.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    slotsContainer.innerHTML = `
+        <p class="text-muted">
+            Loading available slots...
+        </p>
+    `;
+
+
+    selectedTime.value = "";
+
+
+    const url =
+        `/booking/available-slots/?staff=${staff}&service=${service}&date=${date}`;
+
+
+    try {
+
+        const response =
+            await fetch(url);
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Slots API response:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            slotsContainer.innerHTML = `
+                <div class="alert alert-danger">
+                    ${
+                        data.error ||
+                        "Unable to load slots."
+                    }
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        slotsContainer.innerHTML = "";
+
+
+        if (
+            !data.slots ||
+            data.slots.length === 0
+        ) {
+
+            slotsContainer.innerHTML = `
+                <div class="alert alert-warning">
+
+                    ${
+                        data.message ||
+                        "No slots available for this date."
+                    }
+
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        data.slots.forEach(
+            slot => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    "slot-button";
+
+
+                button.innerText =
+                    `${slot.display_time} - ${formatTime(slot.end_time)}`;
+
+
+                button.dataset.time =
+                    slot.time;
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+
+                        document
+                            .querySelectorAll(
+                                ".slot-button"
+                            )
+                            .forEach(
+                                btn => {
+
+                                    btn.classList.remove(
+                                        "active"
+                                    );
+
+                                }
+                            );
+
+
+                        this.classList.add(
+                            "active"
+                        );
+
+
+                        selectedTime.value =
+                            this.dataset.time;
+
+
+                        console.log(
+                            "Selected time:",
+                            selectedTime.value
+                        );
+
+                    }
+                );
+
+
+                slotsContainer.appendChild(
+                    button
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Slot loading error:",
+            error
+        );
+
+
+        slotsContainer.innerHTML = `
+            <div class="alert alert-danger">
+                Unable to load available slots.
+            </div>
+        `;
+
+    }
+
+}
+
+
+// ======================================
+// Service changed
+// ======================================
+
+serviceInputs.forEach(
+    input => {
+
+        input.addEventListener(
+            "change",
+            async function () {
+
+                selectedTime.value = "";
+
+                slotsContainer.innerHTML = `
+                    <p class="text-muted">
+                        Select staff and date.
+                    </p>
+                `;
+
+                await loadStaff();
+
+            }
+        );
+
+    }
+);
+
+
+// ======================================
+// Staff changed
+// ======================================
+
+staffSelect.addEventListener(
+    "change",
+    function () {
+
+        selectedTime.value = "";
+
+        loadSlots();
+
+    }
+);
+
+
+// ======================================
+// Date changed
+// ======================================
+
+dateInput.addEventListener(
+    "change",
+    function () {
+
+        selectedTime.value = "";
+
+        loadSlots();
+
+    }
+);
+
+</script>
+
+{% endblock %}

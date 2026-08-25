@@ -1,0 +1,577 @@
+{% extends "base.html" %}
+
+{% block title %}
+Staff Reports
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "admin_dashboard/sidebar.html" %}
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>
+                    Staff Reports
+                </h2>
+
+                <p class="text-muted">
+                    View individual staff performance.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- STAFF SELECT -->
+
+        <div class="content-card mb-4">
+
+            <h4>
+                Select Staff
+            </h4>
+
+            <form
+                method="GET"
+                class="row g-3 align-items-end"
+            >
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Staff Member
+                    </label>
+
+                    <select
+                        name="staff"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select Staff
+                        </option>
+
+                        {% for staff in staff_members %}
+
+                            <option
+                                value="{{ staff.id }}"
+                                {% if selected_staff and selected_staff.id == staff.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ staff.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        View Report
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        {% if selected_staff %}
+
+        <!-- STAFF INFO -->
+
+        <div class="content-card mb-4">
+
+            <h4>
+                {{ selected_staff.name }}
+            </h4>
+
+            <p class="text-muted mb-0">
+
+                {{ selected_staff.designation }}
+
+                {% if selected_staff.phone %}
+                    • {{ selected_staff.phone }}
+                {% endif %}
+
+            </p>
+
+        </div>
+
+
+        <!-- REPORT FILTER -->
+
+        <div class="content-card mb-4">
+
+            <div class="report-tabs">
+
+                <a
+                    href="?staff={{ selected_staff.id }}&report=daily"
+                    class="btn
+                    {% if report_type == 'daily' %}
+                        btn-primary
+                    {% else %}
+                        btn-outline-primary
+                    {% endif %}
+                    "
+                >
+                    Daily
+                </a>
+
+
+                <a
+                    href="?staff={{ selected_staff.id }}&report=weekly"
+                    class="btn
+                    {% if report_type == 'weekly' %}
+                        btn-primary
+                    {% else %}
+                        btn-outline-primary
+                    {% endif %}
+                    "
+                >
+                    Weekly
+                </a>
+
+
+                <a
+                    href="?staff={{ selected_staff.id }}&report=monthly"
+                    class="btn
+                    {% if report_type == 'monthly' %}
+                        btn-primary
+                    {% else %}
+                        btn-outline-primary
+                    {% endif %}
+                    "
+                >
+                    Monthly
+                </a>
+
+            </div>
+
+
+            <div class="mt-3">
+
+                <strong>
+
+                    {% if report_type == "daily" %}
+                        Daily Staff Report
+
+                    {% elif report_type == "weekly" %}
+                        Weekly Staff Report
+
+                    {% elif report_type == "monthly" %}
+                        Monthly Staff Report
+                    {% endif %}
+
+                </strong>
+
+                <span class="text-muted ms-2">
+
+                    {{ start_date|date:"d M Y" }}
+
+                    -
+
+                    {{ end_date|date:"d M Y" }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="row g-4">
+
+
+            <!-- REVENUE -->
+
+            <div class="col-md-4 col-xl-2">
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>Revenue</p>
+
+                        <h2>
+                            ₹{{ total_revenue }}
+                        </h2>
+
+                    </div>
+
+                    💰
+
+                </div>
+
+            </div>
+
+
+            <!-- BOOKINGS -->
+
+            <div class="col-md-4 col-xl-2">
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>Bookings</p>
+
+                        <h2>
+                            {{ total_bookings }}
+                        </h2>
+
+                    </div>
+
+                    📅
+
+                </div>
+
+            </div>
+
+
+            <!-- COMPLETED -->
+
+            <div class="col-md-4 col-xl-2">
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>Completed</p>
+
+                        <h2>
+                            {{ completed_bookings }}
+                        </h2>
+
+                    </div>
+
+                    ✓
+
+                </div>
+
+            </div>
+
+
+            <!-- PENDING -->
+
+            <div class="col-md-4 col-xl-2">
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>Pending</p>
+
+                        <h2>
+                            {{ pending_bookings }}
+                        </h2>
+
+                    </div>
+
+                    ⏳
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIRMED -->
+
+            <div class="col-md-4 col-xl-2">
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>Confirmed</p>
+
+                        <h2>
+                            {{ confirmed_bookings }}
+                        </h2>
+
+                    </div>
+
+                    ✓
+
+                </div>
+
+            </div>
+
+
+            <!-- CANCELLED -->
+
+            <div class="col-md-4 col-xl-2">
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>Cancelled</p>
+
+                        <h2>
+                            {{ cancelled_bookings }}
+                        </h2>
+
+                    </div>
+
+                    ✕
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SERVICE REPORT -->
+
+        <div class="content-card mt-4">
+
+            <h4>
+                Services Performed
+            </h4>
+
+
+            <div class="table-responsive">
+
+                <table class="table mt-3">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Service
+                            </th>
+
+                            <th>
+                                Bookings
+                            </th>
+
+                            <th>
+                                Revenue
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for service in service_report %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+
+                                <strong>
+                                    {{ service.name }}
+                                </strong>
+
+                            </td>
+
+                            <td>
+                                {{ service.booking_count }}
+                            </td>
+
+                            <td>
+                                ₹{{ service.revenue|default:0 }}
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="4"
+                                class="text-center"
+                            >
+
+                                No bookings found
+                                for this period.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPOINTMENT DETAILS -->
+
+        <div class="content-card mt-4">
+
+            <h4>
+                Appointment Details
+            </h4>
+
+
+            <div class="table-responsive">
+
+                <table class="table mt-3">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Service
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for appointment in appointments %}
+
+                        <tr>
+
+                            <td>
+                                {{ appointment.appointment_date|date:"d M Y" }}
+                            </td>
+
+                            <td>
+                                {{ appointment.customer }}
+                            </td>
+
+                            <td>
+                                {{ appointment.service.name }}
+                            </td>
+
+                            <td>
+
+                                {{ appointment.start_time|time:"h:i A" }}
+
+                                -
+
+                                {{ appointment.end_time|time:"h:i A" }}
+
+                            </td>
+
+                            <td>
+                                ₹{{ appointment.price }}
+                            </td>
+
+                            <td>
+
+                                <span class="badge">
+
+                                    {{ appointment.status|title }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                class="text-center"
+                            >
+
+                                No appointments found.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <!-- NO STAFF SELECTED -->
+
+        <div class="content-card text-center">
+
+            <h4>
+                Select a staff member
+            </h4>
+
+            <p class="text-muted">
+                Select a staff member above
+                to view their report.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+{% endblock %}

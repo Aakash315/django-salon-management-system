@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}
+Staff Availability
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "staff/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>Working Hours</h2>
+
+                <p class="text-muted">
+                    Set your weekly working schedule.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="content-card">
+
+            <form
+                method="POST"
+                action="{% url 'save_availability' %}"
+            >
+
+                {% csrf_token %}
+
+
+                <!-- MONDAY -->
+
+                <div class="availability-row">
+
+                    <div class="day-name">
+                        Monday
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="monday_available"
+                            id="monday_available"
+                            {% for item in availability %}
+                                {% if item.day == 0 and item.is_available %}
+                                    checked
+                                {% endif %}
+                            {% endfor %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="monday_available"
+                        >
+                            Working
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="time"
+                        name="monday_start"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 0 %}{{ item.start_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="time"
+                        name="monday_end"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 0 %}{{ item.end_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                </div>
+
+
+                <!-- TUESDAY -->
+
+                <div class="availability-row">
+
+                    <div class="day-name">
+                        Tuesday
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="tuesday_available"
+                            id="tuesday_available"
+                            {% for item in availability %}
+                                {% if item.day == 1 and item.is_available %}
+                                    checked
+                                {% endif %}
+                            {% endfor %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="tuesday_available"
+                        >
+                            Working
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="time"
+                        name="tuesday_start"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 1 %}{{ item.start_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="time"
+                        name="tuesday_end"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 1 %}{{ item.end_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                </div>
+
+
+                <!-- WEDNESDAY -->
+
+                <div class="availability-row">
+
+                    <div class="day-name">
+                        Wednesday
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="wednesday_available"
+                            id="wednesday_available"
+                            {% for item in availability %}
+                                {% if item.day == 2 and item.is_available %}
+                                    checked
+                                {% endif %}
+                            {% endfor %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="wednesday_available"
+                        >
+                            Working
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="time"
+                        name="wednesday_start"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 2 %}{{ item.start_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="time"
+                        name="wednesday_end"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 2 %}{{ item.end_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                </div>
+
+
+                <!-- THURSDAY -->
+
+                <div class="availability-row">
+
+                    <div class="day-name">
+                        Thursday
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="thursday_available"
+                            id="thursday_available"
+                            {% for item in availability %}
+                                {% if item.day == 3 and item.is_available %}
+                                    checked
+                                {% endif %}
+                            {% endfor %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="thursday_available"
+                        >
+                            Working
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="time"
+                        name="thursday_start"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 3 %}{{ item.start_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="time"
+                        name="thursday_end"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 3 %}{{ item.end_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                </div>
+
+
+                <!-- FRIDAY -->
+
+                <div class="availability-row">
+
+                    <div class="day-name">
+                        Friday
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="friday_available"
+                            id="friday_available"
+                            {% for item in availability %}
+                                {% if item.day == 4 and item.is_available %}
+                                    checked
+                                {% endif %}
+                            {% endfor %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="friday_available"
+                        >
+                            Working
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="time"
+                        name="friday_start"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 4 %}{{ item.start_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="time"
+                        name="friday_end"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 4 %}{{ item.end_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                </div>
+
+
+                <!-- SATURDAY -->
+
+                <div class="availability-row">
+
+                    <div class="day-name">
+                        Saturday
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="saturday_available"
+                            id="saturday_available"
+                            {% for item in availability %}
+                                {% if item.day == 5 and item.is_available %}
+                                    checked
+                                {% endif %}
+                            {% endfor %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="saturday_available"
+                        >
+                            Working
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="time"
+                        name="saturday_start"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 5 %}{{ item.start_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="time"
+                        name="saturday_end"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 5 %}{{ item.end_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                </div>
+
+
+                <!-- SUNDAY -->
+
+                <div class="availability-row">
+
+                    <div class="day-name">
+                        Sunday
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="sunday_available"
+                            id="sunday_available"
+                            {% for item in availability %}
+                                {% if item.day == 6 and item.is_available %}
+                                    checked
+                                {% endif %}
+                            {% endfor %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="sunday_available"
+                        >
+                            Working
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="time"
+                        name="sunday_start"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 6 %}{{ item.start_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="time"
+                        name="sunday_end"
+                        class="form-control"
+                        value="{% for item in availability %}{% if item.day == 6 %}{{ item.end_time|time:'H:i' }}{% endif %}{% endfor %}"
+                    >
+
+                </div>
+
+
+                <div class="mt-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Working Hours
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    {% include "customer/sidebar.html" %}
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>My Profile</h2>
+
+                <p class="text-muted">
+                    Manage your personal information.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="content-card"
+            style="max-width: 700px;"
+        >
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        value="{{ profile.name }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="{{ profile.phone }}"
+                        disabled
+                    >
+
+                    <small class="text-muted">
+                        Phone number is verified and
+                        cannot be changed here.
+                    </small>
+
+                </div>
+
+
+                <div class="mb-4">
+
+                    <label class="form-label">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        class="form-control"
+                        value="{{ profile.email|default:'' }}"
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Save Changes
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}
