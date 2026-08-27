@@ -224,24 +224,25 @@ def available_slots(request):
 
     duration = staff_service.duration
 
-    slot_interval = 15
+    # slot_interval = duration
 
     current_datetime = datetime.combine(
         selected_date,
         availability.start_time
     )
 
-    end_datetime = datetime.combine(
+    working_end_datetime = datetime.combine(
         selected_date,
         availability.end_time
     )
 
     slots = []
 
-    while (current_datetime + timedelta(minutes=duration)) <= end_datetime:
+    while (current_datetime + timedelta(minutes=duration)) <= working_end_datetime:
 
-        slot_start_time = current_datetime.time()
+        slot_start_datetime = current_datetime
         slot_end_datetime = (current_datetime + timedelta(minutes=duration))
+        slot_start_time = slot_start_datetime.time()
         slot_end_time = slot_end_datetime.time()
 
         # Don't create a slot that goes
@@ -256,11 +257,15 @@ def available_slots(request):
 
         if selected_date == today:
 
-            if (timezone.localtime() >= timezone.make_aware(
-                current_datetime
-            )):
+            now = timezone.localtime()
 
-                current_datetime += timedelta(minutes=slot_interval)
+            slot_datetime = timezone.make_aware(
+                slot_start_datetime
+            )
+
+            if slot_datetime <= now:
+
+                current_datetime += timedelta(minutes=duration)
                 continue
 
             # slot_datetime = timezone.make_aware(
@@ -312,6 +317,10 @@ def available_slots(request):
                     "%H:%M"
                 ),
 
+                "display_end_time": slot_end_time.strftime(
+                    "%I:%M %p"
+                ),
+
                 "price": str(
                     staff_service.price
                 ),
@@ -323,7 +332,7 @@ def available_slots(request):
         # Next slot
         # --------------------------------
 
-        current_datetime += timedelta(minutes=slot_interval)
+        current_datetime += timedelta(minutes=duration)
         # current_time = current_datetime.time()
 
     return JsonResponse({
@@ -348,17 +357,47 @@ def create_booking(request):
     start_time_string = request.POST.get("start_time")
     notes = request.POST.get("notes", "")
 
+    # --------------------------------
+    # Validate input
+    # --------------------------------
+
+    if not service_id or not staff_id:
+        messages.error(
+            request,
+            "Please select service and staff."
+        )
+        return redirect("booking")
+
+    if not date_string or not start_time_string:
+        messages.error(
+            request,
+            "Please select date and time."
+        )
+        return redirect("booking")    
+
+    # --------------------------------
+    # Get service
+    # --------------------------------
+
     service = get_object_or_404(
         Service,
         id=service_id,
         is_active=True
     )
 
+    # --------------------------------
+    # Get staff
+    # --------------------------------
+
     staff = get_object_or_404(
         StaffProfile,
         id=staff_id,
         is_available=True
     )
+
+    # --------------------------------
+    # Get staff service
+    # --------------------------------
 
     staff_service = get_object_or_404(
         StaffService,
@@ -367,21 +406,70 @@ def create_booking(request):
         is_available=True
     )
 
-    appointment_date = datetime.strptime(
-        date_string,
-        "%Y-%m-%d"
-    ).date()
+    # --------------------------------
+    # Parse date
+    # --------------------------------
 
-    start_time = datetime.strptime(
-        start_time_string,
-        "%H:%M"
-    ).time()
+    try:
 
-    start_datetime = timezone.make_aware(
-        datetime.combine(
-            appointment_date,
-            start_time
+        appointment_date = datetime.strptime(
+            date_string,
+            "%Y-%m-%d"
+        ).date()
+
+    except ValueError:
+
+        messages.error(
+            request,
+            "Invalid date or time format."
         )
+
+        return redirect("booking")
+
+    # --------------------------------
+    # Don't allow past date
+    # --------------------------------
+
+    today = timezone.localdate()
+
+    if appointment_date < today:
+
+        messages.error(
+            request,
+            "You cannot book a past date."
+        )
+
+        return redirect("booking")
+
+    # --------------------------------
+    # Parse start time
+    # --------------------------------
+
+    try:
+
+        start_time = datetime.strptime(
+            start_time_string,
+            "%H:%M"
+        ).time()
+
+    except ValueError:
+
+        messages.error(
+            request,
+            "Invalid appointment time."
+        )
+
+        return redirect("booking")
+
+
+    # --------------------------------
+    # Calculate END TIME
+    # using service duration
+    # --------------------------------
+
+    start_datetime = datetime.combine(
+        appointment_date,
+        start_time
     )
 
     end_datetime = (
@@ -393,22 +481,14 @@ def create_booking(request):
 
     end_time = end_datetime.time()
 
-    # Don't allow past bookings
-
-    if start_datetime < timezone.now():
-
-        messages.error(
-            request,
-            "You cannot book a past time."
-        )
-
-        return redirect("booking")
-
-    # Check working hours
+    # --------------------------------
+    # Check staff availability
+    # --------------------------------
 
     weekday = appointment_date.weekday()
 
-    availability = staff.availability.filter(
+    availability = StaffAvailability.objects.filter(
+        staff=staff,
         day=weekday,
         is_available=True
     ).first()
@@ -422,6 +502,24 @@ def create_booking(request):
 
         return redirect("booking")
 
+    # --------------------------------
+    # Check working hours
+    # --------------------------------
+
+    if not availability.start_time:
+        messages.error(
+            request,
+            "Staff working hours are not configured."
+        )
+        return redirect("booking")
+
+    if not availability.end_time:
+        messages.error(
+            request,
+            "Staff working hours are not configured."
+        )
+        return redirect("booking")
+
     if (
         start_time < availability.start_time
         or
@@ -430,12 +528,35 @@ def create_booking(request):
 
         messages.error(
             request,
-            "Selected time is outside working hours."
+            "Selected time is outside staff working hours."
         )
 
         return redirect("booking")
 
-    # Double booking protection
+    # --------------------------------
+    # Check today's past time
+    # --------------------------------
+
+    if appointment_date == today:
+
+        current_datetime = timezone.localtime()
+
+        booking_datetime = timezone.make_aware(
+            start_datetime
+        )
+
+        if booking_datetime <= current_datetime:
+
+            messages.error(
+                request,
+                "You cannot book a past time."
+            )
+
+            return redirect("booking")
+
+    # --------------------------------
+    # Check overlapping appointments
+    # --------------------------------
 
     conflict = Appointment.objects.filter(
         staff=staff,
@@ -456,6 +577,10 @@ def create_booking(request):
         )
 
         return redirect("booking")
+
+    # --------------------------------
+    # Create appointment
+    # --------------------------------
 
     appointment = Appointment.objects.create(
         customer=request.user,
